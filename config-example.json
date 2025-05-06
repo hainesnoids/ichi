@@ -1,0 +1,7 @@
+{
+    "token": "BOT_TOKEN_HERE",
+    "clientId": "CLIENT_ID_HERE",
+    "openCubeInstance": "OPENCUBE_INSTANCE_URL_HERE",
+    "globalLogChannel": "CHANNEL_ID_HERE",
+    "ownerId": "USER_ID_HERE"
+}

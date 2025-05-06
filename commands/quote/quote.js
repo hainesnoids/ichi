@@ -1,0 +1,97 @@
+const { AttachmentBuilder } = require('discord.js');
+const { createCanvas, loadImage, registerFont } = require('canvas');
+
+module.exports = {
+	"data": {
+        name: 'quote',
+        integration_types: [0, 1],
+        contexts: [0, 1, 2],
+        type: 3,
+        options: [],
+    },
+	async execute(interaction) {
+        // text wrapping
+        function getLines(ctx, text, maxWidth) {
+            var words = text.trim().split(" ");
+            var lines = [];
+            var currentLine = "";
+        
+            for (var i = 0; i < words.length; i++) {
+                var word = words[i];
+                var width = ctx.measureText(currentLine + " " + word).width;
+                if (width <= maxWidth) {
+                    currentLine += " " + word;
+                } else {
+                    lines.push(currentLine);
+                    currentLine = word;
+                }
+            }
+            lines.push(currentLine.trim());
+            return lines;
+        }
+
+        // necessary values
+        const target = await interaction.options.data[0].message;
+        const message = target.content;
+        const user = target.author;
+
+        // make image
+        const canvas = createCanvas(1200, 630);
+        registerFont("./commands/quote/Inter.ttf", { family: "Inter" });
+        registerFont("./commands/quote/Inter_ital.ttf", { family: "Inter Italic" });
+
+        // get canvas context
+        const ctx = canvas.getContext("2d");
+
+        // add user image
+        const avatarUrl = user.displayAvatarURL({extension: 'png'}) || user.avatarURL({extension: 'png'});
+        await loadImage(avatarUrl).then((image) => {
+            ctx.drawImage(image, -130, 0, 630, 630)
+        });
+
+        // add overlay
+        await loadImage('./commands/quote/overlay.png').then((image) => {
+            ctx.drawImage(image, 0, 0, 1200, 630)
+        });
+
+        // add quote text
+        ctx.font = '48pt "Inter"';
+        ctx.fillStyle = "white";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        const fontSize = 48;
+        const lineHeight = fontSize * 1.15;
+
+        const textLines = await getLines(ctx, message, canvas.width / 2)
+        for (let idx = 0; idx < textLines.length; idx++) {
+            const itm = textLines[idx];
+
+            // calculate line position
+            const linePosition = idx * lineHeight + canvas.height * .5 - ((textLines.length * lineHeight) / 2) + lineHeight / 2;
+
+            // add text
+            ctx.fillText(itm, canvas.width * .69, linePosition);
+        }
+
+        // add user text
+        ctx.font = '24pt "Inter Italic"';
+        ctx.fillStyle = "#a0a0a0";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+
+        const authorPosition = textLines.length + 1 * lineHeight * textLines.length + canvas.height * .5 - ((textLines.length * lineHeight) / 2) + (52 / 2);
+        ctx.fillText("- " + user.displayName, canvas.width * .69, authorPosition);
+
+        ctx.font = '12pt "Inter Italic"';
+        ctx.fillStyle = "#707070";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+
+        const authorPosition2 = textLines.length + 1 * lineHeight * textLines.length + canvas.height * .5 - ((textLines.length * lineHeight) / 2) + (112 / 2);
+        ctx.fillText("@" + user.username, canvas.width * .69, authorPosition2);
+
+        // create image stream, then send to discord
+        const stream = canvas.createPNGStream();
+        await interaction.reply({ files: [new AttachmentBuilder(stream)] });
+	},
+};
