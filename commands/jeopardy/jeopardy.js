@@ -45,24 +45,29 @@ module.exports = {
         // get canvas context
         const ctx = canvas.getContext("2d");
 
-        ctx.fillStyle = "darkblue";
-        ctx.fillRect(0,0,canvas.width,canvas.height);
+        //ctx.fillStyle = "darkblue";
+        //ctx.fillRect(0,0,canvas.width,canvas.height);
+
+        // add background
+        await loadImage('./commands/jeopardy/background.png').then((image) => {
+            ctx.drawImage(image, 0, 0, 1920, 1080)
+        });
 
         // add quote text
-        ctx.font = '96pt "Jeopardy"';
+        ctx.font = '88pt "Jeopardy"';
         ctx.fillStyle = "white";
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
         ctx.fontStretch = "normal";
-        const fontSize = 96;
-        const lineHeight = fontSize * 1.15;
+        const fontSize = 88;
+        const lineHeight = fontSize * 1.25;
 
         const textLines = await getLines(ctx, interaction.options.get("message").value.toUpperCase(), 1440)
         for (let idx = 0; idx < textLines.length; idx++) {
             const itm = textLines[idx];
 
             // calculate line position
-            const linePosition = idx * lineHeight + canvas.height * .5 - ((textLines.length * lineHeight) / 2) + lineHeight / 2 + ((lineHeight - fontSize) / 2);
+            const linePosition = (canvas.height - (lineHeight * textLines.length) / 2) + lineHeight * (idx + 0.5) - (canvas.height / 2) + ((lineHeight - fontSize) / 2);
 
             // add text
             ctx.fillStyle = "black";

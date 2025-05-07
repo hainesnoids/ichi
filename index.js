@@ -1,7 +1,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const { REST, Routes, Client, Collection, GatewayIntentBits, EmbedBuilder, AttachmentBuilder, MessageFlags } = require('discord.js');
-const { token, clientId, globalLogChannel, ownerId } = require('./config.json');
+const { token, clientId, globalLogChannel, ownerId } = require('./config-testing.json');
 
 // Create a new client instance
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });

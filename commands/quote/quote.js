@@ -60,14 +60,14 @@ module.exports = {
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
         const fontSize = 48;
-        const lineHeight = fontSize * 1.15;
+        const lineHeight = fontSize * 1.3;
 
         const textLines = await getLines(ctx, message, canvas.width / 2)
         for (let idx = 0; idx < textLines.length; idx++) {
             const itm = textLines[idx];
 
             // calculate line position
-            const linePosition = idx * lineHeight + canvas.height * .5 - ((textLines.length * lineHeight) / 2) + lineHeight / 2;
+            const linePosition = (canvas.height - (lineHeight * textLines.length) / 2) + lineHeight * (idx + 0.5) - (canvas.height / 2) + ((lineHeight - fontSize) / 2);
 
             // add text
             ctx.fillText(itm, canvas.width * .69, linePosition);
@@ -79,7 +79,7 @@ module.exports = {
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
 
-        const authorPosition = textLines.length + 1 * lineHeight * textLines.length + canvas.height * .5 - ((textLines.length * lineHeight) / 2) + (52 / 2);
+        const authorPosition = (canvas.height - (lineHeight * textLines.length) / 2) + lineHeight * (textLines.length) - (canvas.height / 2) + (52 / 2) + ((lineHeight - fontSize) / 2);
         ctx.fillText("- " + user.displayName, canvas.width * .69, authorPosition);
 
         ctx.font = '12pt "Inter Italic"';
@@ -87,7 +87,7 @@ module.exports = {
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
 
-        const authorPosition2 = textLines.length + 1 * lineHeight * textLines.length + canvas.height * .5 - ((textLines.length * lineHeight) / 2) + (112 / 2);
+        const authorPosition2 = (canvas.height - (lineHeight * textLines.length) / 2) + lineHeight * (textLines.length) - (canvas.height / 2) + (112 / 2) + ((lineHeight - fontSize) / 2);
         ctx.fillText("@" + user.username, canvas.width * .69, authorPosition2);
 
         // create image stream, then send to discord
