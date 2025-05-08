@@ -10,7 +10,7 @@ module.exports = {
     },
 	async execute(interaction) {
 		const embed = new EmbedBuilder()
-            .setColor(0x85bcbc)
+            .setColor(0x96BF10)
             .setTitle("About Ichi")
             .setThumbnail("https://cdn.discordapp.com/avatars/1361447067247054950/0a3a600821788995145955cbd43c8c15.png?size=512")
             //.setAuthor({ name: 'About Ichi' })

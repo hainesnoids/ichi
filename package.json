@@ -1,16 +1,16 @@
 {
-    "name": "Ichi",
+    "name": "ichi",
     "version": "0.1.0",
     "description": "the Ichi Discord Bot",
-    "main": "index.js",
+    "main": "src/index.js",
     "scripts": {
-        "start": "node index.js"
+        "start": "node src/index.js"
     },
     "keywords": [],
     "author": "",
     "license": "GPL-3.0-only",
     "dependencies": {
-        "discord.js": "^14.18.0",
+        "discord.js": "^14.19.3",
         "wled": "^1.1.0",
         "node-fetch": "2.*",
         "color-convert": "^3.0.1",

@@ -3,5 +3,6 @@
     "clientId": "CLIENT_ID_HERE",
     "openCubeInstance": "OPENCUBE_INSTANCE_URL_HERE",
     "globalLogChannel": "CHANNEL_ID_HERE",
+    "globalUsageLogChannel": "CHANNEL_ID_HERE",
     "ownerId": "USER_ID_HERE"
 }

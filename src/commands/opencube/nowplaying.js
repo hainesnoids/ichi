@@ -40,7 +40,7 @@ module.exports = {
 
         const currentSong = playlist[clientData.song];
         // Get Average Color of Album Art
-        const color = 0x85BCBC
+        const color = 0x96BF10
         // Convert Album Art to a Data URL for use in the embed
         const thumb = new AttachmentBuilder(`http://${openCubeInstance}/images/albums/${(currentSong.album)}.jpg`)
         .setName("albumArt.jpg");

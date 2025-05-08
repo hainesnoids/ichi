@@ -90,6 +90,13 @@ module.exports = {
         const authorPosition2 = (canvas.height - (lineHeight * textLines.length) / 2) + lineHeight * (textLines.length) - (canvas.height / 2) + (112 / 2) + ((lineHeight - fontSize) / 2);
         ctx.fillText("@" + user.username, canvas.width * .69, authorPosition2);
 
+        ctx.font = '18pt "Inter"';
+        ctx.fillStyle = "#707070";
+        ctx.textAlign = "right";
+        ctx.textBaseline = "middle";
+
+        ctx.fillText("ws4k.net/ichi", 1190, 610);
+
         // create image stream, then send to discord
         const stream = canvas.createPNGStream();
         await interaction.reply({ files: [new AttachmentBuilder(stream)] });

@@ -40,7 +40,7 @@ module.exports = {
 
         // make image
         const canvas = createCanvas(1920, 1080);
-        registerFont("./commands/jeopardy/font.ttf", { family: "Jeopardy" });
+        registerFont("./commands/jeopardy/font.otf", { family: "Jeopardy" });
 
         // get canvas context
         const ctx = canvas.getContext("2d");

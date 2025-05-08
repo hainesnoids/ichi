@@ -25,7 +25,7 @@ module.exports = {
 
         for (let idx = 0; idx < 5; idx++) {
             const itm = playlist[idx + clientData.song + 1];
-            const color = 0x85BCBC
+            const color = 0x96BF10
             filesArray.push(new AttachmentBuilder(`http://${openCubeInstance}/images/albums/${(itm.album)}.jpg`)
                 .setName(`art-${idx}.jpg`)
             );
