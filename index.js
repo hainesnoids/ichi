@@ -1,7 +1,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const { REST, Routes, Client, Collection, GatewayIntentBits, EmbedBuilder, AttachmentBuilder, MessageFlags } = require('discord.js');
-const { token, clientId, globalLogChannel, globalUsageLogChannel, ownerId } = require('./config.json');
+const { token, clientId, globalLogChannel, globalUsageLogChannel, ownerId } = require('./config-testing.json');
 
 // Create a new client instance
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
@@ -35,10 +35,15 @@ try {
     console.error(error);
 };
 
+function updateStatus(c) {
+    c.user.setActivity({ name: 'convention tomorrow! | /about', type: 4 });
+}
+
 client.on('ready', rClient => {
 	console.log(`Logged in as ${rClient.user.tag}!`);
     rClient.user.setPresence({ status: 'online' });
-    rClient.user.setActivity({ name: 'convention tomorrow! | /about', type: 4 });
+    updateStatus(rClient);
+    setInterval(() => {updateStatus(rClient)},3600000);
 });
 
 client.on('interactionCreate', async interaction => {
@@ -75,6 +80,11 @@ client.on('interactionCreate', async interaction => {
 // Catch exceptions to prevent a crash
 
 process.on('uncaughtException', function(err, origin) {
+    if (err == "Error: SIGKILL") {
+        // killed by running /kill, skip this check entirely
+        throw new Error("SIGKILL");
+        return;
+    }
     console.error("\x1b[31m✕\x1b[0m " + "\x1b[1m" + err + "\x1b[0m")
     const channelId = globalLogChannel;
     const channel = client.channels.cache.get(channelId);
@@ -82,7 +92,7 @@ process.on('uncaughtException', function(err, origin) {
         .setColor(0xff0000)
         .setTitle("Uncaught Exception!")
         //.setAuthor({ name: 'About Ichi' })
-        .setDescription(String(origin).slice(0,2000))
+        .setDescription(String(err).slice(0,2000))
         //.setFooter({ text: "© 2025 Hainesnoids. Licensed under GPL-3.0." })
         .setTimestamp()
     channel.send({ content: `<@${ownerId}>`, embeds: [embed] });
