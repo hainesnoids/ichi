@@ -6,6 +6,7 @@ const { token, clientId, globalLogChannel, globalUsageLogChannel, ownerId } = re
 // Create a new client instance
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
+// Instert all slash commands
 client.commands = new Collection();
 const foldersPath = path.join(__dirname, 'commands');
 const commandFolders = fs.readdirSync(foldersPath);
@@ -19,6 +20,26 @@ for (const folder of commandFolders) {
 		// Set a new item in the Collection with the key as the command name and the value as the exported module
 		if ('data' in command && 'execute' in command) {
 			client.commands.set(command.data.name, command);
+			//console.log("Loaded Command " + command.data.name);
+		} else {
+			console.log("\x1b[33m!\x1b[0m " + `The command at ${filePath} is missing a required "data" or "execute" property.`);
+		}
+	}
+}
+
+// start all Modules
+const foldersPath2 = path.join(__dirname, 'modules');
+const commandFolders2 = fs.readdirSync(foldersPath2);
+
+for (const folder of commandFolders2) {
+	const commandsPath = path.join(foldersPath2, folder);
+	const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
+	for (const file of commandFiles) {
+		const filePath = path.join(commandsPath, file);
+		const command = require(filePath);
+		if ('data' in command && 'execute' in command) {
+			//console.log("Loaded Module " + command.data.name);
+			command.execute(client);
 		} else {
 			console.log("\x1b[33m!\x1b[0m " + `The command at ${filePath} is missing a required "data" or "execute" property.`);
 		}
@@ -83,7 +104,6 @@ process.on('uncaughtException', function(err, origin) {
     if (err == "Error: SIGKILL") {
         // killed by running /kill, skip this check entirely
         throw new Error("SIGKILL");
-        return;
     }
     console.error("\x1b[31m✕\x1b[0m " + "\x1b[1m" + err + "\x1b[0m")
     const channelId = globalLogChannel;
@@ -95,7 +115,7 @@ process.on('uncaughtException', function(err, origin) {
         .setDescription(String(err).slice(0,2000))
         //.setFooter({ text: "© 2025 Hainesnoids. Licensed under GPL-3.0." })
         .setTimestamp()
-    channel.send({ content: `<@${ownerId}>`, embeds: [embed] });
+	channel.send({ content: `<@${ownerId}>`, embeds: [embed] });
 })
 
 async function logError(err) {
@@ -109,7 +129,7 @@ async function logError(err) {
         .setDescription(String(err).slice(0,2000))
         //.setFooter({ text: "© 2025 Hainesnoids. Licensed under GPL-3.0." })
         .setTimestamp()
-    channel.send({ embeds: [embed] });
+    await channel.send({ embeds: [embed] });
 }
 
 async function logCommand(user, cmd) {
@@ -120,7 +140,7 @@ async function logCommand(user, cmd) {
         .setTitle(cmd)
 		.setFooter({ iconURL: user.avatarURL({extension: 'png'}), text: user.username })
         .setTimestamp()
-    channel.send({ embeds: [embed] });
+    await channel.send({ embeds: [embed] });
 }
 // Log in to Discord with your client's token
 client.login(token);

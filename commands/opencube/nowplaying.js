@@ -9,10 +9,8 @@ function slider(value, min = 0, max = 100, length = 10) {
     const filledPart = '<:prog_full:1364671468608295042>'.repeat(filledLength);
     const emptyPart = '<:prog_empty:1364671865842438204>'.repeat(length - filledLength - 1);
     const dot = '<:prog_dot:1364671486434087073>';
-
-    const slider = `${filledPart}${dot}${emptyPart}`;
     
-    return slider;
+    return `${filledPart}${dot}${emptyPart}`;
 }
 
 function timestamps(start, end) {

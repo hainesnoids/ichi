@@ -1,5 +1,6 @@
 const { exec } = require("child_process");
 const { ownerId } = require('../../config.json');
+const { MessageFlags } = require('discord.js');
 
 module.exports = {
 	"data": {

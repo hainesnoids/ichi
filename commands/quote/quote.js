@@ -9,13 +9,13 @@ module.exports = {
         type: 3,
         options: [],
     },
-	async execute(interaction) {
+	async execute(interaction, client) {
         // text wrapping
         function getLines(ctx, text, maxWidth) {
-            var words = text.trim().split(" ");
+            var words = text.trim().replaceAll("\n"," ").split(" ");
             var lines = [];
             var currentLine = "";
-        
+
             for (var i = 0; i < words.length; i++) {
                 var word = words[i];
                 var width = ctx.measureText(currentLine + " " + word).width;
@@ -30,9 +30,36 @@ module.exports = {
             return lines;
         }
 
+        // regex shit
+        async function fixMarkdown(message) {
+            const regex = /<@([0-9]+)>/g;
+            const matches = [...message.matchAll(regex)];
+
+            const fetchPromises = matches.map(async (match) => {
+                const userId = match[1];
+                try {
+                    const user = await client.users.fetch(userId);
+                    return { username: user.username, id: userId, index: match.index, length: match[0].length };
+                } catch (err) {
+                    return null;
+                }
+            });
+
+            const results = await Promise.all(fetchPromises);
+
+            let updatedMessage = message;
+            results.forEach(result => {
+                if (result) {
+                    updatedMessage = updatedMessage.replaceAll("<@" + result.id + ">", "@" + result.username);
+                }
+            });
+
+            return updatedMessage;
+        }
+
         // necessary values
         const target = await interaction.options.data[0].message;
-        const message = target.content;
+        const message = await fixMarkdown(target.content);
         const user = target.author;
 
         // make image
@@ -44,7 +71,7 @@ module.exports = {
         const ctx = canvas.getContext("2d");
 
         // add user image
-        const avatarUrl = user.displayAvatarURL({extension: 'png'}) || user.avatarURL({extension: 'png'});
+        const avatarUrl = user.displayAvatarURL({extension: 'png', size: 1024}) || user.avatarURL({extension: 'png', size: 1024});
         await loadImage(avatarUrl).then((image) => {
             ctx.drawImage(image, -130, 0, 630, 630)
         });
@@ -62,7 +89,7 @@ module.exports = {
         const fontSize = 48;
         const lineHeight = fontSize * 1.3;
 
-        const textLines = await getLines(ctx, message, canvas.width / 2)
+        const textLines = getLines(ctx, message, canvas.width / 2)
         for (let idx = 0; idx < textLines.length; idx++) {
             const itm = textLines[idx];
 
@@ -90,6 +117,7 @@ module.exports = {
         const authorPosition2 = (canvas.height - (lineHeight * textLines.length) / 2) + lineHeight * (textLines.length) - (canvas.height / 2) + (112 / 2) + ((lineHeight - fontSize) / 2);
         ctx.fillText("@" + user.username, canvas.width * .69, authorPosition2);
 
+        // watermark
         ctx.font = '18pt "Inter"';
         ctx.fillStyle = "#707070";
         ctx.textAlign = "right";
