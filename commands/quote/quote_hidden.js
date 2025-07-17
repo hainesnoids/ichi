@@ -1,9 +1,9 @@
-const { AttachmentBuilder } = require('discord.js');
+const { AttachmentBuilder, MessageFlags } = require('discord.js');
 const { createCanvas, loadImage, registerFont } = require('canvas');
 
 module.exports = {
 	"data": {
-        name: 'Quote this',
+        name: 'Quote this (epheminal)',
         integration_types: [0, 1],
         contexts: [0, 1, 2],
         type: 3,
@@ -127,6 +127,6 @@ module.exports = {
 
         // create image stream, then send to discord
         const stream = canvas.createPNGStream();
-        await interaction.reply({ files: [new AttachmentBuilder(stream)] });
+        await interaction.reply({ files: [new AttachmentBuilder(stream)] , flags: MessageFlags.Ephemeral});
 	},
 };

@@ -16,7 +16,12 @@ module.exports = {
     },
 	async execute(interaction) {
         const gayness = Math.round(Math.random() * 100);
-        const target = interaction.options.get("target").user ?? interaction.user;
+        let target;
+        try {
+            target = interaction.options.get("target").user;
+        } catch {
+            target = interaction.user;
+        };
         const reply = `<@${target.id}> is ${gayness}% gay!`;
         await interaction.reply({ content: reply });
 	},

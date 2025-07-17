@@ -4,7 +4,7 @@ const { REST, Routes, Client, Collection, GatewayIntentBits, EmbedBuilder, Attac
 const { token, clientId, globalLogChannel, globalUsageLogChannel, ownerId } = require('./config-testing.json');
 
 // Create a new client instance
-const client = new Client({ intents: [GatewayIntentBits.Guilds] });
+const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.MessageContent, GatewayIntentBits.GuildMessages, GatewayIntentBits.GuildMessageReactions] });
 
 // Instert all slash commands
 client.commands = new Collection();
@@ -38,7 +38,7 @@ for (const folder of commandFolders2) {
 		const filePath = path.join(commandsPath, file);
 		const command = require(filePath);
 		if ('data' in command && 'execute' in command) {
-			//console.log("Loaded Module " + command.data.name);
+			console.log("Loaded Module " + command.data.name);
 			command.execute(client);
 		} else {
 			console.log("\x1b[33m!\x1b[0m " + `The command at ${filePath} is missing a required "data" or "execute" property.`);
@@ -73,6 +73,27 @@ client.on('interactionCreate', async interaction => {
     console.log(interaction.user.username + " \x1b[34m>\x1b[0m " + interaction.commandName);
 	logCommand(interaction.user, interaction.commandName);
 	const command = interaction.client.commands.get(interaction.commandName);
+
+	// anti-mist filter
+	const userData = await fetch(`https://discord.com/api/v10/users/${interaction.user.id}`, {
+		headers: {
+			"Authorization": 'Bot ' + token
+		}
+	}).then((response) => {return response.json()})
+
+	if (userData.clan.identity_guild_id.toString() === "1059354045971693568") {
+		await interaction.reply({ content: 'You may not use Ichi if you are a member of Mist Weather Media. Please leave the server and try again.' });
+		const channel = client.channels.cache.get("1395043795946573874");
+		const embed = new EmbedBuilder()
+			.setColor(0xffe900)
+			.setTitle("A blacklisted user tried to run a command.")
+			.setDescription(`<@${interaction.user.id}> tried to run ${interaction.commandName}.`)
+			.setFooter({ iconURL: interaction.user.avatarURL({extension: 'png'}), text: interaction.user.username })
+			.setTimestamp()
+		await channel.send({ embeds: [embed] });
+		return;
+	}
+
 
 	if (!command) {
 		console.error(`No command matching ${interaction.commandName} was found.`);
