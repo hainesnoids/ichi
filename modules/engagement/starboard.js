@@ -8,37 +8,73 @@ module.exports = {
     },
     async execute(client) {
         const config = {
-            channel_id: "1380213569253019728",
+            channel_id: "1379626504064995409",
+            guild_id: "1347981302636478464",
             emoji: "⭐",
-            minAmount: 1
+            minAmount: 4
         }
-        console.log("yo wsp");
         client.on('messageReactionAdd', async (reaction, user) => {
-            console.log("hi");
-            console.log(reaction.emoji);
-            if (reaction.emoji.name === config.emoji) {
+            if (reaction.emoji.name === config.emoji && reaction.message.guildId === config.guild_id) {
                 const message = reaction.message;
 
                 const starboardChannel = client.channels.cache.get(config.channel_id);
                 const starboardMessages = await starboardChannel.messages.fetch();
                 const existingStarredMessage = starboardMessages.find(starredMessage =>
                     starredMessage.embeds.length > 0 &&
-                    starredMessage.embeds[0].title === `https://discord.com/channels/${message.guildId}/${message.channelId}/${message.id}`
+                    starredMessage.content === `https://discord.com/channels/${message.guildId}/${message.channelId}/${message.id}`
                 );
 
-                if (existingStarredMessage) return;
+                if (existingStarredMessage) {
+                    // edit the star count
+                    const embed = new EmbedBuilder()
+                        .setColor('#FFD700')
+                        .setTitle(reaction.count + ' ' + config.emoji)
+                        .setDescription(message.content)
+                        .setFooter({ iconURL: message.author.avatarURL({extension: 'png'}), text: message.author.username })
+                        .setTimestamp();
+                    existingStarredMessage.edit({embeds: [embed]})
+                    return
+                };
 
                 if (reaction.count >= config.minAmount) {
                     const embed = new EmbedBuilder()
-                        .setColor('#FFD700') // Gold color for the starboard
-                        .setTitle(`https://discord.com/channels/${message.guildId}/${message.channelId}/${message.id}`)
-                        .setAuthor(message.author.username, message.author.displayAvatarURL())
+                        .setColor('#FFD700')
+                        .setTitle(reaction.count + ' ' + config.emoji)
                         .setDescription(message.content)
+                        .setFooter({ iconURL: message.author.avatarURL({extension: 'png'}), text: message.author.username })
                         .setTimestamp();
 
                     // Send the embed to the starboard channel
-                    starboardChannel.send({ embeds: [embed] });
+                    starboardChannel.send({ content: `https://discord.com/channels/${message.guildId}/${message.channelId}/${message.id}`, embeds: [embed] });
                 }
+            }
+        })
+        client.on('messageReactionRemove', async (reaction, user) => {
+            if (reaction.emoji.name === config.emoji && reaction.message.guildId === config.guild_id) {
+                const message = reaction.message;
+
+                const starboardChannel = client.channels.cache.get(config.channel_id);
+                const starboardMessages = await starboardChannel.messages.fetch();
+                const existingStarredMessage = starboardMessages.find(starredMessage =>
+                    starredMessage.embeds.length > 0 &&
+                    starredMessage.content === `https://discord.com/channels/${message.guildId}/${message.channelId}/${message.id}`
+                );
+
+                if (existingStarredMessage) {
+                    if (reaction.count < config.minAmount) {
+                        existingStarredMessage.delete();
+                        return
+                    }
+                    // edit the star count
+                    const embed = new EmbedBuilder()
+                        .setColor('#FFD700')
+                        .setTitle(reaction.count + ' ' + config.emoji)
+                        .setDescription(message.content)
+                        .setFooter({ iconURL: message.author.avatarURL({extension: 'png'}), text: message.author.username })
+                        .setTimestamp();
+                    existingStarredMessage.edit({embeds: [embed]})
+                    return
+                };
             }
         })
     }

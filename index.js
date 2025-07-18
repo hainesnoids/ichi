@@ -4,7 +4,15 @@ const { REST, Routes, Client, Collection, GatewayIntentBits, EmbedBuilder, Attac
 const { token, clientId, globalLogChannel, globalUsageLogChannel, ownerId } = require('./config-testing.json');
 
 // Create a new client instance
-const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.MessageContent, GatewayIntentBits.GuildMessages, GatewayIntentBits.GuildMessageReactions] });
+const client = new Client({
+	intents: [
+		GatewayIntentBits.Guilds,
+		GatewayIntentBits.GuildMessages,
+		GatewayIntentBits.MessageContent,
+		GatewayIntentBits.GuildMessageReactions,
+		GatewayIntentBits.GuildMembers
+	]
+});
 
 // Instert all slash commands
 client.commands = new Collection();
@@ -28,20 +36,22 @@ for (const folder of commandFolders) {
 }
 
 // start all Modules
-const foldersPath2 = path.join(__dirname, 'modules');
-const commandFolders2 = fs.readdirSync(foldersPath2);
+async function startModules() {
+	const foldersPath2 = path.join(__dirname, 'modules');
+	const commandFolders2 = fs.readdirSync(foldersPath2);
 
-for (const folder of commandFolders2) {
-	const commandsPath = path.join(foldersPath2, folder);
-	const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
-	for (const file of commandFiles) {
-		const filePath = path.join(commandsPath, file);
-		const command = require(filePath);
-		if ('data' in command && 'execute' in command) {
-			console.log("Loaded Module " + command.data.name);
-			command.execute(client);
-		} else {
-			console.log("\x1b[33m!\x1b[0m " + `The command at ${filePath} is missing a required "data" or "execute" property.`);
+	for (const folder of commandFolders2) {
+		const commandsPath = path.join(foldersPath2, folder);
+		const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
+		for (const file of commandFiles) {
+			const filePath = path.join(commandsPath, file);
+			const command = require(filePath);
+			if ('data' in command && 'execute' in command) {
+				console.log("Loaded Module " + command.data.name);
+				command.execute(client);
+			} else {
+				console.log("\x1b[33m!\x1b[0m " + `The command at ${filePath} is missing a required "data" or "execute" property.`);
+			}
 		}
 	}
 }
@@ -66,6 +76,10 @@ client.on('ready', rClient => {
     updateStatus(rClient);
     setInterval(() => {updateStatus(rClient)},3600000);
 });
+
+client.once('ready', () => {
+	startModules();
+})
 
 client.on('interactionCreate', async interaction => {
 	if (interaction.isChatInputCommand() || interaction.isContextMenuCommand()) {} else return;
