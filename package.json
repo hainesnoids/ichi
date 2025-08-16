@@ -1,19 +1,24 @@
 {
     "name": "ichi",
-    "version": "0.2.0",
+    "version": "0.3.0",
     "description": "the Ichi Discord Bot",
     "main": "index.js",
     "scripts": {
-        "start": "node index.js"
+        "dbsetup": "node dbinit.js",
+        "start": "pm2 start index.js -n ichi"
     },
     "keywords": [],
     "author": "",
     "license": "GPL-3.0-only",
+    "type": "commonjs",
     "dependencies": {
+        "@globaleas/easjs": "^0.2.3",
         "canvas": "^3.1.0",
         "color-convert": "^3.0.1",
         "discord.js": "14.21.0",
+        "fast-xml-parser": "^5.2.5",
         "node-fetch": "2.*",
+        "pixi.js": "^8.11.0",
         "wled": "^1.1.0"
     }
 }

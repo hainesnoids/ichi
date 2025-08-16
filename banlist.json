@@ -1,0 +1,21 @@
+[
+  {
+    "type": "user",
+    "id": "287047244073402368",
+    "reason": "get away you freak",
+    "appeal": false
+  },
+  {
+    "type": "usergroup",
+    "ids": ["1379958114924625990", "1307183357570060338", "1059635154290749440", "1293367916074631230", "1368488980646985768", "1394113509817716840"],
+    "reason": "Raiding ApatheticDELL Central",
+    "appeal": true
+  },
+  {
+    "type": "primaryguild",
+    "id": "1059354045971693568",
+    "reason": "You may not use Ichi if you are a member of Mist Weather Media. Please leave the server and try again.",
+    "appeal": true,
+    "exclusions": ["1033720108968841277"]
+  }
+]

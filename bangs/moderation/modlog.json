@@ -1,0 +1,39 @@
+{
+  "0": {
+    "id": "0",
+    "type": "warn",
+    "target": "496829863924072448",
+    "targetGuild": "1347981302636478464",
+    "reason": "generic reason"
+  },
+  "1": {
+    "id": "1",
+    "type": "timeout",
+    "target": "496829863924072448",
+    "targetGuild": "1347981302636478464",
+    "duration": 3600,
+    "reason": "generic reason"
+  },
+  "2": {
+    "id": "2",
+    "type": "kick",
+    "target": "496829863924072448",
+    "targetGuild": "1347981302636478464",
+    "reason": "generic reason"
+  },
+  "3": {
+    "id": "3",
+    "type": "ban",
+    "target": "496829863924072448",
+    "targetGuild": "1347981302636478464",
+    "reason": "generic reason"
+  },
+  "4": {
+    "id": "4",
+    "type": "tempban",
+    "target": "496829863924072448",
+    "targetGuild": "1347981302636478464",
+    "duration": 3600,
+    "reason": "generic reason"
+  }
+}

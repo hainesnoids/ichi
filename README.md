@@ -12,3 +12,8 @@ copy and paste a file that is placed inside the `commands` folder, and tweak it 
 
 # Adding Modules (Daemons)
 copy and paste a file that is placed inside the `modules` folder, and tweak it as needed.
+
+# Code Snippet Credits
+| Person                              | Code Used             |
+|-------------------------------------|-----------------------|
+| [Colon](https://github.com/GDColon) | Generator for /gdicon |
