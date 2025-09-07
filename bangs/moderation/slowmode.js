@@ -2,7 +2,6 @@ const { PermissionsBitField } = require('discord.js');
 
 async function formatTime(abbreviatedTime) {
     let slowmodeValue, verbalTime
-    verbalTime = ''
     // get value time as regex match groups
     const regex = /([0-9]+h)?([0-9]+m)?([0-9]+s?)?/gm;
     const quirkyTime = regex.exec(abbreviatedTime);

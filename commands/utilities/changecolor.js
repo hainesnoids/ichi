@@ -45,18 +45,17 @@ module.exports = {
     async execute(interaction) {
         const color = interaction.options.get('color').value;
         console.log(color);
-        var rgbVal = [];
+        let rgbVal = [];
         if (interaction.options.get('type').value === "rgb") {
             rgbVal = color.split(", ");
         } else if (interaction.options.get('type').value === "hsv") {
-            rgbVal = await convert.hsv.rgb(color.split(", "));
+            rgbVal = convert.hsv.rgb(color.split(", "));
         } else if (interaction.options.get('type').value === "hex") {
-            rgbVal = await convert.hex.rgb(color.replace("#",""));
+            rgbVal = convert.hex.rgb(color.replace("#", ""));
         } else if (interaction.options.get('type').value === "keyword") {
-            rgbVal = await convert.keyword.rgb(color);
+            rgbVal = convert.keyword.rgb(color);
         } else {
         }
-        lights.setOn(true);
         lights.setColor(rgbVal);
         console.log("\x1b[33m└\x1b[0m", rgbVal);
         await interaction.reply('changed LED color (or tried to)');

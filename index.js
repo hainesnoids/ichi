@@ -1,7 +1,8 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const { REST, Routes, Client, Collection, GatewayIntentBits, EmbedBuilder, MessageFlags } = require('discord.js');
-const { token, clientId, globalLogChannel, globalUsageLogChannel, ownerId } = require('./config-testing.json');
+const { token, clientId, globalLogChannel, globalUsageLogChannel } = require('./config.json');
+//const banlist = require('./banlist.json');
 
 // Detect and Enable Verbose messages
 let verboseLevel = 0;
@@ -101,7 +102,6 @@ client.on('interactionCreate', async interaction => {
 	const command = interaction.client['commands'].get(interaction.commandName);
 
 	// banned user search (anti-mist filter)
-	const banlist = require('banlist.json');
 	const userData = await fetch(`https://discord.com/api/v10/users/${interaction.user.id}`, {
 		headers: {
 			"Authorization": 'Bot ' + token
@@ -132,7 +132,7 @@ client.on('interactionCreate', async interaction => {
 	*/
 
 	if (userData.clan.identity_guild_id.toString() === "1059354045971693568") {
-		await interaction.reply({ content: 'You have been banned from using Ichi!' });
+		await interaction.reply({ content: 'You may not use Ichi if you are a member of Mist Weather Media. Please leave the server and try again.' });
 		const channel = client.channels.cache.get("1395043795946573874");
 		const embed = new EmbedBuilder()
 			.setColor(0xffe900)
@@ -152,52 +152,38 @@ client.on('interactionCreate', async interaction => {
 	try {
 		await command.execute(interaction, client);
 	} catch (error) {
-		console.error(error);
-		logError(error);
-        const embed = new EmbedBuilder()
-        .setColor(0xff0000)
-        .setTitle(String(error).slice(0,2000))
-        //.setDescription(String(origin).slice(0,2000))
-        //.setFooter({ text: "© 2025 Hainesnoids. Licensed under GPL-3.0" })
-        .setTimestamp()
+		const errorEmbed = await logError(error);
+		errorEmbed.setFooter({ text: "This error has been automatically reported to the bot's maintainer(s)." });
 		if (interaction.replied || interaction.deferred) {
-			await interaction.followUp({ embeds: [embed], content: 'There was an error while executing this command!', flags: MessageFlags['Ephemeral'] });
+			await interaction.followUp({ embeds: [errorEmbed], content: 'There was an error while executing this command!', flags: MessageFlags['Ephemeral'] });
 		} else {
-			await interaction.reply({ embeds: [embed], content: 'There was an error while executing this command!', flags: MessageFlags['Ephemeral'] });
+			await interaction.reply({ embeds: [errorEmbed], content: 'There was an error while executing this command!', flags: MessageFlags['Ephemeral'] });
 		}
 	}
 });
 
 // Catch exceptions to prevent a crash
 
-process.on('uncaughtException', function(err) {
-    if (err === "Error: SIGKILL") {
-        // killed by running /kill, skip this check entirely
-        throw new Error("SIGKILL");
-    }
-    console.error("\x1b[31m✕\x1b[0m " + "\x1b[1m" + err + "\x1b[0m")
-    const channel = client.channels.cache.get(globalLogChannel);
-    const embed = new EmbedBuilder()
-        .setColor(0xff0000)
-        .setTitle("Uncaught Exception!")
-        //.setAuthor({ name: 'About Ichi' })
-        .setDescription(String(err).slice(0,2000))
-        //.setFooter({ text: "© 2025 Hainesnoids. Licensed under GPL-3.0." })
-        .setTimestamp()
-	channel.send({ content: `<@${ownerId}>`, embeds: [embed] });
+process.on('uncaughtException', async function(err) {
+	if (err.message === "SIGKILL") {
+		// killed by running /kill, skip this check entirely and nuke the program
+		throw new Error("SIGKILL");
+	}
+	await logError(err)
 })
 
 async function logError(err) {
-	console.error("\x1b[31m✕\x1b[0m " + "\x1b[1m" + err + "\x1b[0m")
-    const channel = client.channels.cache.get(globalLogChannel);
-    const embed = new EmbedBuilder()
-        .setColor(0xff0000)
-        .setTitle("Error!")
-        //.setAuthor({ name: 'About Ichi' })
-        .setDescription(String(err).slice(0,2000))
-        //.setFooter({ text: "© 2025 Hainesnoids. Licensed under GPL-3.0." })
-        .setTimestamp()
+	console.error(`\x1b[31m✕\x1b[0m \x1b[1m${err.message}\x1b[0m\n${err.stack}`)
+	const channel = client.channels.cache.get(globalLogChannel);
+	const embed = new EmbedBuilder()
+		.setColor(0xff0000)
+		.setTitle("Error!")
+		//.setAuthor({ name: 'About Ichi' })
+		.setDescription(`${err.name}: ${err.message}\n\`\`\`${err.stack}\`\`\``)
+		//.setFooter({ text: "© 2025 Hainesnoids. Licensed under GPL-3.0." })
+		.setTimestamp()
     await channel.send({ embeds: [embed] });
+	return embed;
 }
 
 async function logCommand(user, cmd) {
