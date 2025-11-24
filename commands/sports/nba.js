@@ -63,13 +63,13 @@ module.exports = {
 
                 let away = {
                     score: gameData['header']['competitions'][0]['competitors'][0]['score'] ?? 0,
-                    logo: gameData['boxscore']['teams'][0]['team']['logo'],
-                    abbr: gameData['boxscore']['teams'][0]['team']['abbreviation']
+                    logo: gameData['boxscore']['teams'][1]['team']['logo'],
+                    abbr: gameData['boxscore']['teams'][1]['team']['abbreviation']
                 }
                 let home = {
                     score: gameData['header']['competitions'][0]['competitors'][1]['score'] ?? 0,
-                    logo: gameData['boxscore']['teams'][1]['team']['logo'],
-                    abbr: gameData['boxscore']['teams'][1]['team']['abbreviation']
+                    logo: gameData['boxscore']['teams'][0]['team']['logo'],
+                    abbr: gameData['boxscore']['teams'][0]['team']['abbreviation']
                 }
                 let game = {
                     statusSummary: gameData['header']['competitions'][0]['status']['type']['description'],
