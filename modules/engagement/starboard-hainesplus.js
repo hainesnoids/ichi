@@ -10,7 +10,7 @@ module.exports = {
             channel_id: "1414239374236713072",
             guild_id: "509114317564805140",
             emoji: "⭐",
-            minAmount: 4
+            minAmount: 2
         }
         function init() {
              client.guilds.cache.forEach(async (guild) => {

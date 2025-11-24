@@ -1,16 +1,20 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const { REST, Routes, Client, Collection, GatewayIntentBits, EmbedBuilder, MessageFlags } = require('discord.js');
-const { token, clientId, globalLogChannel, globalUsageLogChannel } = require('./config.json');
+let configToUse = './config.json';
 //const banlist = require('./banlist.json');
 
-// Detect and Enable Verbose messages
+// handle command line arguments
 let verboseLevel = 0;
 process.argv.forEach(function (val) {
 	if (val === `-v`) {
 		verboseLevel = 1;
-	}
+	} else if (val === '--testing') {
+        configToUse = './config-testing.json';
+    }
 });
+
+const { token, clientId, globalLogChannel, globalUsageLogChannel } = require(configToUse);
 
 // Create a new client instance
 const client = new Client({
@@ -102,34 +106,32 @@ client.on('interactionCreate', async interaction => {
 	const command = interaction.client['commands'].get(interaction.commandName);
 
 	// banned user search (anti-mist filter)
-	const userData = await fetch(`https://discord.com/api/v10/users/${interaction.user.id}`, {
-		headers: {
-			"Authorization": 'Bot ' + token
-		}
-	}).then((response) => {return response.json()});
-	/*
-	let banned;
-	let banItem;
-	for (const item in banlist) {
-		switch (item.type) {
-			case "user": {
+    /*const userData = await fetch(`https://discord.com/api/v10/users/${interaction.user.id}`, {
+        headers: {
+            "Authorization": 'Bot ' + token
+        }
+    }).then((response) => {return response.json()});
+    let banned;
+    let banItem;
+    for (const item in banlist) {
+        switch (item.type) {
+            case "user": {
 
-				break
-			}
-			case "usergroup": {
-				break
-			}
-			case "primaryguild": {
-				if (userData.clan.identity_guild_id.toString() === item.id && item.exclusions.includes(interaction.user.id) !== true) {
-					banned = true;
-					banItem = item;
-				}
-				break
-			}
-		}
-		if (banned === true) return;
-	}
-	*/
+                break
+            }
+            case "usergroup": {
+                break
+            }
+            case "primaryguild": {
+                if (userData.clan.identity_guild_id.toString() === item.id && item.exclusions.includes(interaction.user.id) !== true) {
+                    banned = true;
+                    banItem = item;
+                }
+                break
+            }
+        }
+        if (banned === true) return;
+    }
 
 	if (userData.clan.identity_guild_id.toString() === "1059354045971693568") {
 		await interaction.reply({ content: 'You may not use Ichi if you are a member of Mist Weather Media. Please leave the server and try again.' });
@@ -143,6 +145,7 @@ client.on('interactionCreate', async interaction => {
 		await channel.send({ embeds: [embed] });
 		return;
 	}
+    */
 
 	if (!command) {
 		console.error(`No command matching ${interaction.commandName} was found.`);
@@ -153,7 +156,7 @@ client.on('interactionCreate', async interaction => {
 		await command.execute(interaction, client);
 	} catch (error) {
 		const errorEmbed = await logError(error);
-		errorEmbed.setFooter({ text: "This error has been automatically reported to the bot's maintainer(s)." });
+		errorEmbed.setFooter({ text: "This error has been automatically reported to the bot maintainer(s)." });
 		if (interaction.replied || interaction.deferred) {
 			await interaction.followUp({ embeds: [errorEmbed], content: 'There was an error while executing this command!', flags: MessageFlags['Ephemeral'] });
 		} else {
@@ -182,7 +185,11 @@ async function logError(err) {
 		.setDescription(`${err.name}: ${err.message}\n\`\`\`${err.stack}\`\`\``)
 		//.setFooter({ text: "© 2025 Hainesnoids. Licensed under GPL-3.0." })
 		.setTimestamp()
-    await channel.send({ embeds: [embed] });
+    try {
+        await channel.send({ embeds: [embed] });
+    } catch(e) {
+        console.error(`\x1b[31m✕\x1b[0m \x1b[0m${'uuh, I couldn\'t log this error for some unforeseen reason.'}`)
+    }
 	return embed;
 }
 

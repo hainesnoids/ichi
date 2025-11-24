@@ -4,17 +4,17 @@ const { EmbedBuilder } = require('discord.js');
 module.exports = {
     "data": {
         name: "starboard",
-        description: "starboard handler for the fanblog server"
+        description: "starboard handler for uwu 2"
     },
     async execute(client) {
         const config = {
-            channel_id: "1380210432177999872",
-            guild_id: "1379626504064995409",
+            channel_id: "1432502529282932878",
+            guild_id: "1392291650889453689",
             emoji: "⭐",
             minAmount: 2
         }
         function init() {
-             client.guilds.cache.forEach(async (guild) => {
+            client.guilds.cache.forEach(async (guild) => {
                 if (guild.id !== config.guild_id) return
                 const channels = guild.channels.cache.filter(channel => channel.type === 0);
                 for (const channel of channels.values()) {
