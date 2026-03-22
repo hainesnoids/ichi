@@ -23,19 +23,19 @@ function getImportantGameIndex(games) {
             return i - 1;
         }
     }
-    return games.length - 1;
+    return gamez.length - 1;
 }
 
 module.exports = {
 	"data": {
-        name: 'nfl',
-        description: "Browse the NFL. (Powered by ESPN)",
+        name: 'nhl',
+        description: "Browse the NHL. (Powered by ESPN)",
         integration_types: [0, 1],
         contexts: [0, 1, 2],
         options: [
             {
                 name: 'game',
-                description: "Get info on a particular NFL game by team. (Powered by ESPN)",
+                description: "Get info on a particular NHL game by team. (Powered by ESPN)",
                 type: 1,
                 options: [
                     {
@@ -55,12 +55,11 @@ module.exports = {
             case 'game': {
                 // get the necessary data
                 const team = interaction.options.get("team").value.toLowerCase();
-                const teamGames = await fetch(`https://site.api.espn.com/apis/site/v2/sports/football/nfl/teams/${team}/schedule`)
-                    .then(async res => {return (await res.json())});
-                const newestGame = teamGames['events'][getImportantGameIndex(teamGames['events'])];
-console.log(newestGame);                
-const gameData = await fetch(`https://site.api.espn.com/apis/site/v2/sports/football/nfl/summary?event=${newestGame.id}`)
-                    .then(async res => {return (await res.json())});
+                const teamGames = await fetch(`https://site.api.espn.com/apis/site/v2/sports/hockey/nhl/teams/${team}/schedule`)
+                    .then(res => {return res.json()});
+                const newestGame = teamGames['events'][getImportantGameIndex(teamGames.events)];
+                const gameData = await fetch(`https://site.api.espn.com/apis/site/v2/sports/hockey/nhl/summary?event=${newestGame.id}`)
+                    .then(res => {return res.json()});
 
                 let away = {
                     score: gameData['header']['competitions'][0]['competitors'][0]['score'] ?? 0,

@@ -2,14 +2,14 @@ const { AttachmentBuilder, MessageFlags } = require('discord.js');
 const { createCanvas, loadImage, registerFont } = require('canvas');
 
 module.exports = {
-	"data": {
+    "data": {
         name: 'Quote this (epheminal)',
         integration_types: [0, 1],
         contexts: [0, 1, 2],
         type: 3,
         options: [],
     },
-	async execute(interaction, client) {
+    async execute(interaction, client) {
         // text wrapping
         function getLines(ctx, text, maxWidth) {
             var words = text.trim().replaceAll("\n"," ").split(" ");
@@ -127,6 +127,8 @@ module.exports = {
 
         // create image stream, then send to discord
         const stream = canvas.createPNGStream();
-        await interaction.reply({ files: [new AttachmentBuilder(stream)] , flags: MessageFlags.Ephemeral});
-	},
+        const attachment = new AttachmentBuilder(stream);
+        attachment.setName(`quote_${target.id}.png`);
+        await interaction.reply({ files: [attachment], flags: MessageFlags.Ephemeral });
+    },
 };

@@ -127,6 +127,8 @@ module.exports = {
 
         // create image stream, then send to discord
         const stream = canvas.createPNGStream();
-        await interaction.reply({ files: [new AttachmentBuilder(stream)] });
+        const attachment = new AttachmentBuilder(stream);
+        attachment.setName(`quote_${target.id}.png`);
+        await interaction.reply({ files: [attachment] });
 	},
 };

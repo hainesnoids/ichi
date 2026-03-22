@@ -23,7 +23,7 @@ function getImportantGameIndex(games) {
             return i - 1;
         }
     }
-    return -1;
+    return gamez.length - 1;
 }
 
 module.exports = {
